@@ -4,7 +4,6 @@ const io = new Server(3001, {
 })
 
 const ROOM_CHAR_SIZE = 6
-const PORT = 80
 const players = new Map()
 
 class Player {
@@ -87,9 +86,4 @@ io.on('connection', socket => {
       console.log('🚪 Emptied:', room)
     }
   })
-})
-
-http.listen(PORT, err => {
-  if (err) throw err
-  console.log('🎧')
 })

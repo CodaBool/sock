@@ -64,6 +64,14 @@ build {
     source = "../.env"
     destination = "/home/ec2-user/.env"
   }
+  provisioner "file" {
+    source = "../game.js"
+    destination = "/home/ec2-user/game.js"
+  }
+  provisioner "file" {
+    source = "../data.json"
+    destination = "/home/ec2-user/data.json"
+  }
 
   // I used a gist guide on how to setup log agent as well as the AWS docs
   // gist = https://gist.github.com/adam-hanna/06afe09209589c80ba460662f7dce65c
@@ -96,7 +104,7 @@ build {
       "npm install -g @socket.io/pm2",
       "pm2 start sock.config.cjs",
       "pm2 startup",
-      "folder=echo $(ls ~/.nvm/versions/node/)",
+      "folder=$(ls ~/.nvm/versions/node/)",
       "sudo env PATH=$PATH:/home/ec2-user/.nvm/versions/node/$folder/bin /home/ec2-user/.nvm/versions/node/$folder/lib/node_modules/@socket.io/pm2/bin/pm2 startup systemd -u ec2-user --hp /home/ec2-user",
       "pm2 save",
 

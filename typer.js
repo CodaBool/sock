@@ -1,9 +1,9 @@
 import 'dotenv/config'
 import { Server } from "socket.io"
 import mongoose from 'mongoose'
-import Game from './Models/Game.js'
+import Game from './game.js'
 
-import allData from "./constants/data.json" assert { type: "json" }
+import allData from "./data.json" assert { type: "json" }
 // import simpleData from "./constants/simple.json" assert { type: "json" }
 
 const port = process.env.PORT || 3000

@@ -29,5 +29,6 @@ pm2 start sockets.config.cjs
 "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/agent.json",
 
 # Attempt 2
-
-pm2 start socket.config.cjs
+- test connection `curl "https://example.com/socket.io/?EIO=4&transport=polling"`
+- find a base ami to manually start `aws ec2 describe-images --owners amazon --filters "Name=architecture,Values=arm64" "Name=name,Values=al2*" --query "Images | sort_by(@, &CreationDate) | [].[ImageId, Name]" | jq '.[]'`
+- I think there are minimal al2 ami's. I should look into this
