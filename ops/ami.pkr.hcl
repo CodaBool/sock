@@ -81,18 +81,22 @@ build {
     //   "FOO=hello world",
     // ]
     inline = [
+      // "set -x",
       "sudo yum update -y -q",
 
       // AWS monitoring
       "sudo yum install amazon-cloudwatch-agent -y -q",
 
       // mem save technique
-      "sudo grubby --update-kernel=ALL --remove-args=\"systemd.unified_cgroup_hierarchy=0\"",
+      // "sudo grubby --update-kernel=ALL --remove-args=\"systemd.unified_cgroup_hierarchy=0\"",
 
       // install node, use latest version https://github.com/nvm-sh/nvm/releases
-      "curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash",
-      ". ~/.nvm/nvm.sh",
-      "nvm install --lts",
+      "sudo yum install nodejs -y -q",
+
+      // allow global installs w/o sudo
+      "npm config set prefix '~/.local/'",
+      "mkdir -p ~/.local/bin",
+      "echo 'export PATH=~/.local/bin/:$PATH' >> ~/.bashrc",
 
       // TODO: using npm ci is more secure, but slows down my install
       "npm install",
@@ -104,8 +108,7 @@ build {
       "npm install -g @socket.io/pm2",
       "pm2 start sock.config.cjs",
       "pm2 startup",
-      "folder=$(ls ~/.nvm/versions/node/)",
-      "sudo env PATH=$PATH:/home/ec2-user/.nvm/versions/node/$folder/bin /home/ec2-user/.nvm/versions/node/$folder/lib/node_modules/@socket.io/pm2/bin/pm2 startup systemd -u ec2-user --hp /home/ec2-user",
+      "sudo env PATH=$PATH:/usr/bin /home/ec2-user/.local/lib/node_modules/@socket.io/pm2/bin/pm2 startup systemd -u ec2-user --hp /home/ec2-user",
       "pm2 save",
 
       // add monitoring config
@@ -115,7 +118,7 @@ build {
 
       // start monitoring process
       "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/agent.json",
-      "sudo yum clean all"
+      // "sudo yum clean all"
     ]
   }
 }
