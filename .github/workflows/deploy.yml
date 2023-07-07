@@ -33,6 +33,7 @@ jobs:
       - name: Packer
         working-directory: ./ops
         run: |
+          echo "MONGO_URI=${{ secrets.MONGO_URI }}" > ../.env
           packer init .
           packer build -var="unique_ami_name=${{ env.repo }}-${{ env.run }}" .
         # env:
