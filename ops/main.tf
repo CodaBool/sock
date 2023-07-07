@@ -77,33 +77,28 @@ terraform {
 #   }
 # }
 
-locals {
-  name = "sock-min"
-}
-
 module "ec2" {
   source        = "github.com/CodaBool/AWS/modules/ec2"
-  name          = local.name # this must match what packer tag named the ami
+  name          = var.name # will use "name*" for ami filtering
   instance_type = "t4g.nano"
-  price         = data.external.lowest_price.result.price
   ssh_ip        = var.ssh_ip == "" ? data.external.my_ip.result.ip : var.ssh_ip 
-  profile_name  = local.name
+  app_ports     = [3000, 3001]
 }
 
 data "external" "my_ip" {
   program = ["curl", "https://ipinfo.io"]
 }
 
-module "cloudwatch" {
-  source = "github.com/CodaBool/AWS/modules/cloudwatch"
-  profile_name  = local.name
+variable "name" {
+  type = string
 }
 
-data "external" "lowest_price" {
-  program = ["bash", "price.sh"]
+variable "ssh_ip" {
+  type = string
+  default = ""
 }
 
-output "dns" {
+output "private_dns" {
   value = module.ec2.instance.private_dns
 }
 
@@ -111,7 +106,6 @@ output "id" {
   value = module.ec2.instance.spot_instance_id
 }
 
-variable "ssh_ip" {
-  type = string
-  default = ""
+output "ip" {
+  value = module.ec2.eip
 }

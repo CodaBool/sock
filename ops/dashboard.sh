@@ -5,7 +5,7 @@
 #   exit 1
 # fi
 
-PRIVATE_DNS_NAME=$(terraform output -raw dns)
+PRIVATE_DNS_NAME=$(terraform output -raw private_dns)
 INSTANCE_ID=$(terraform output -raw id)
 LOG_GROUP=$1
 

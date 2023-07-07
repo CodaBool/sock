@@ -46,13 +46,13 @@ jobs:
         working-directory: ./ops
         run: |
           terraform init
-          terraform apply -auto-approve -var="ssh_ip=${{ secrets.WIN_IP }}"
+          terraform apply -auto-approve -var="ssh_ip=${{ secrets.WIN_IP }}" -var="name=${{ env.repo }}"
       - name: Dashboard
         working-directory: ./ops
         run: |
           ./dashboard.sh ${{ env.repo }}
           #./rm_ami.sh || true
           #./rm_ebs.sh || true
-      - name: Tag
-        working-directory: ./ops
-        run: aws ec2 create-tags --resources $(terraform output -raw id) --tags Key=Name,Value=sock
+      # - name: Tag
+      #   working-directory: ./ops
+      #   run: aws ec2 create-tags --resources $(terraform output -raw id) --tags Key=Name,Value=sock
