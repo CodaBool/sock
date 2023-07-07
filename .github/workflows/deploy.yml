@@ -36,8 +36,6 @@ jobs:
           echo "MONGO_URI=${{ secrets.MONGO_URI }}" > ../.env
           packer init .
           packer build -var="unique_ami_name=${{ env.repo }}-${{ env.run }}" .
-        # env:
-        #   PACKER_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.2 # https://releases.hashicorp.com/terraform
@@ -51,8 +49,8 @@ jobs:
         working-directory: ./ops
         run: |
           ./dashboard.sh ${{ env.repo }}
-          #./rm_ami.sh || true
-          #./rm_ebs.sh || true
-      # - name: Tag
-      #   working-directory: ./ops
-      #   run: aws ec2 create-tags --resources $(terraform output -raw id) --tags Key=Name,Value=sock
+          ./rm_ami.sh || true
+          ./rm_ebs.sh || true
+      - name: Tag
+        working-directory: ./ops
+        run: aws ec2 create-tags --resources $(terraform output -raw id) --tags Key=Name,Value=${{ env.repo }}
