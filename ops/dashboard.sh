@@ -7,9 +7,11 @@
 
 PRIVATE_DNS_NAME=$(terraform output -raw dns)
 INSTANCE_ID=$(terraform output -raw id)
+LOG_GROUP=$1
 
 echo "PRIVATE_DNS_NAME $PRIVATE_DNS_NAME"
 echo "INSTANCE_ID $INSTANCE_ID"
+echo "LOG_GROUP $LOG_GROUP"
 
 DASHBOARD_SOURCECODE=$( jq -n \
   --arg BLUE "#17becf" \
@@ -19,6 +21,7 @@ DASHBOARD_SOURCECODE=$( jq -n \
   --arg BABY_BLUE "#1f77b4" \
   --arg PRIVATE_DNS_NAME "$PRIVATE_DNS_NAME" \
   --arg INSTANCE_ID "$INSTANCE_ID" \
+  --arg LOG_GROUP "$LOG_GROUP" \
   '{
   "widgets": [
       {
@@ -283,7 +286,7 @@ DASHBOARD_SOURCECODE=$( jq -n \
           "width": 18,
           "height": 11,
           "properties": {
-              "query": "SOURCE \"/aws/ec2/slap\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
+              "query": "SOURCE \"/aws/ec2/$LOG_GROUP\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
               "region": "us-east-1",
               "stacked": false,
               "view": "table",
@@ -293,6 +296,6 @@ DASHBOARD_SOURCECODE=$( jq -n \
   ]
 }' )
 
-# echo $DASHBOARD_SOURCECODE
+echo $DASHBOARD_SOURCECODE
 
-aws cloudwatch put-dashboard --dashboard-name "Slap" --dashboard-body "$DASHBOARD_SOURCECODE" | jq -r .
+aws cloudwatch put-dashboard --dashboard-name "$LOG_GROUP" --dashboard-body "$DASHBOARD_SOURCECODE" | jq -r .
