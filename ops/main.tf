@@ -78,7 +78,7 @@ terraform {
 # }
 
 locals {
-  name = "sock"
+  name = "sock-min"
 }
 
 module "ec2" {

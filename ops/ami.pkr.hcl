@@ -9,7 +9,6 @@ packer {
 
 variable "unique_ami_name" {
   type = string
-  default = "sock"
 }
 
 # uses an api call similar to this:
@@ -23,7 +22,7 @@ source "amazon-ebs" "al2" {
   // there are options for spot instances
   source_ami_filter {
     filters = {
-      name                = "al2*"
+      name                = "al2*minimal*"
       architecture        = "arm64"
     }
     most_recent = true
@@ -69,8 +68,8 @@ build {
     destination = "/home/ec2-user/game.js"
   }
   provisioner "file" {
-    source = "../data.json"
-    destination = "/home/ec2-user/data.json"
+    source = "../data.js"
+    destination = "/home/ec2-user/data.js"
   }
 
   // I used a gist guide on how to setup log agent as well as the AWS docs
@@ -81,17 +80,13 @@ build {
     //   "FOO=hello world",
     // ]
     inline = [
-      // "set -x",
       "sudo yum update -y -q",
 
-      // AWS monitoring
-      "sudo yum install amazon-cloudwatch-agent -y -q",
+      // AWS monitoring & node
+      "sudo yum install amazon-cloudwatch-agent nodejs -y -q",
 
       // mem save technique
-      // "sudo grubby --update-kernel=ALL --remove-args=\"systemd.unified_cgroup_hierarchy=0\"",
-
-      // install node, use latest version https://github.com/nvm-sh/nvm/releases
-      "sudo yum install nodejs -y -q",
+      "sudo grubby --update-kernel=ALL --remove-args=\"systemd.unified_cgroup_hierarchy=0\"",
 
       // allow global installs w/o sudo
       "npm config set prefix '~/.local/'",
@@ -101,24 +96,21 @@ build {
       // TODO: using npm ci is more secure, but slows down my install
       "npm install",
 
-      // TODO: nginx or iptables are more secure than adding node to sudo
-      // "sudo cp $(echo \"$NVM_DIR/versions/node/$(nvm version)/bin/node\") /bin",
-
       // pm2
       "npm install -g @socket.io/pm2",
       "pm2 start sock.config.cjs",
-      "pm2 startup",
-      "sudo env PATH=$PATH:/usr/bin /home/ec2-user/.local/lib/node_modules/@socket.io/pm2/bin/pm2 startup systemd -u ec2-user --hp /home/ec2-user",
+      "sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ec2-user --hp /home/ec2-user",
       "pm2 save",
 
       // add monitoring config
+      "chmod 400 ~/.env",
       "sudo chmod 750 /tmp/agent.json",
       "sudo chown root:root /tmp/agent.json",
       "sudo cp /tmp/agent.json /opt/aws/agent.json",
 
       // start monitoring process
       "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/agent.json",
-      // "sudo yum clean all"
+      "sudo yum clean all"
     ]
   }
 }
