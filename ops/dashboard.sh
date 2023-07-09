@@ -7,11 +7,13 @@
 
 PRIVATE_DNS_NAME=$(terraform output -raw private_dns)
 INSTANCE_ID=$(terraform output -raw id)
-LOG_GROUP=$1
+LOG_GROUP_1=$1
+LOG_GROUP_2=$2
 
 echo "PRIVATE_DNS_NAME $PRIVATE_DNS_NAME"
 echo "INSTANCE_ID $INSTANCE_ID"
-echo "LOG_GROUP $LOG_GROUP"
+echo "LOG_GROUP_1 $LOG_GROUP_1"
+echo "LOG_GROUP_2 $LOG_GROUP_2"
 
 DASHBOARD_SOURCECODE=$( jq -n \
   --arg BLUE "#17becf" \
@@ -21,7 +23,8 @@ DASHBOARD_SOURCECODE=$( jq -n \
   --arg BABY_BLUE "#1f77b4" \
   --arg PRIVATE_DNS_NAME "$PRIVATE_DNS_NAME" \
   --arg INSTANCE_ID "$INSTANCE_ID" \
-  --arg LOG_GROUP "$LOG_GROUP" \
+  --arg LOG_GROUP_1 "$LOG_GROUP_1" \
+  --arg LOG_GROUP_2 "$LOG_GROUP_2" \
   '{
   "widgets": [
       {
@@ -286,11 +289,25 @@ DASHBOARD_SOURCECODE=$( jq -n \
           "width": 18,
           "height": 11,
           "properties": {
-              "query": "SOURCE \"/aws/ec2/$LOG_GROUP\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
+              "query": "SOURCE \"/aws/ec2/$LOG_GROUP_1\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
               "region": "us-east-1",
               "stacked": false,
               "view": "table",
-              "title": "Logs"
+              "title": "$LOG_GROUP_1"
+          }
+      },
+      {
+          "type": "log",
+          "x": 0,
+          "y": 12,
+          "width": 18,
+          "height": 11,
+          "properties": {
+              "query": "SOURCE \"/aws/ec2/$LOG_GROUP_2\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
+              "region": "us-east-1",
+              "stacked": false,
+              "view": "table",
+              "title": "$LOG_GROUP_2"
           }
       }
   ]

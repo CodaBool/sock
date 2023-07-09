@@ -83,7 +83,7 @@ module "ec2" {
   instance_type = "t4g.nano"
   ssh_ip        = var.ssh_ip == "" ? data.external.my_ip.result.ip : var.ssh_ip 
   app_ports     = [3000, 3001]
-  key_name = var.key_name
+  key_name      = var.key_name
 }
 
 data "external" "my_ip" {

@@ -48,7 +48,7 @@ jobs:
       - name: Dashboard
         working-directory: ./ops
         run: |
-          ./dashboard.sh ${{ env.repo }}
+          ./dashboard.sh slap typer
           ./rm_ami.sh || true
           ./rm_ebs.sh || true
       - name: Tag
