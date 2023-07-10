@@ -86,8 +86,8 @@ build {
     inline = [
       "sudo yum update -y -q",
 
-      // AWS monitoring & node
-      "sudo yum install amazon-cloudwatch-agent nodejs -y -q",
+      // AWS monitoring & node & nginx
+      "sudo yum install amazon-cloudwatch-agent nodejs nginx -y -q",
 
       // mem save technique
       "sudo grubby --update-kernel=ALL --remove-args=\"systemd.unified_cgroup_hierarchy=0\"",
@@ -113,8 +113,7 @@ build {
       "sudo mv /tmp/agent.json /opt/aws/agent.json",
 
       // reverse proxy
-      "sudo yum install nginx -y",
-      "sudo chmod 622 /tmp/nginx.conf",
+      "sudo chmod 644 /tmp/nginx.conf",
       "sudo chown root:root /tmp/nginx.conf",
       "sudo mv /tmp/nginx.conf /etc/nginx/nginx.conf",
       "sudo systemctl enable --now nginx",

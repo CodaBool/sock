@@ -12,8 +12,7 @@ const port = process.env.PORT || 3000
 const ROOM_CHAR_SIZE = 6
 const httpServer = createServer()
 const io = new Server(httpServer, {
-  cors: { origin: "*" },
-  path: "/typer"
+  cors: { origin: "*" }
 })
 await mongoose.connect(process.env.MONGO_URI)
 
