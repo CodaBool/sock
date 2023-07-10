@@ -44,7 +44,7 @@ build {
     destination = "/tmp/agent.json"
   }
   provisioner "file" {
-    source = "../slap.js"
+    source = "../slap.mjs"
     destination = "/home/ec2-user/slap.js"
   }
   provisioner "file" {
