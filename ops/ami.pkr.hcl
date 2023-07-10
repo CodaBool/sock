@@ -71,6 +71,10 @@ build {
     source = "../data.js"
     destination = "/home/ec2-user/data.js"
   }
+  provisioner "file" {
+    source = "../nginx.conf"
+    destination = "/tmp/nginx.conf"
+  }
 
   // I used a gist guide on how to setup log agent as well as the AWS docs
   // gist = https://gist.github.com/adam-hanna/06afe09209589c80ba460662f7dce65c
@@ -106,7 +110,14 @@ build {
       "chmod 400 ~/.env",
       "sudo chmod 750 /tmp/agent.json",
       "sudo chown root:root /tmp/agent.json",
-      "sudo cp /tmp/agent.json /opt/aws/agent.json",
+      "sudo mv /tmp/agent.json /opt/aws/agent.json",
+
+      // reverse proxy
+      "sudo yum install nginx -y",
+      "sudo chmod 622 /tmp/nginx.conf",
+      "sudo chown root:root /tmp/nginx.conf",
+      "sudo mv /tmp/nginx.conf /etc/nginx/nginx.conf",
+      "sudo systemctl enable --now nginx",
 
       // start monitoring process
       "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/agent.json",

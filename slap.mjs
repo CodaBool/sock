@@ -1,8 +1,13 @@
+import { createServer } from "http"
 import { Server } from "socket.io"
-const io = new Server(3001, {
-  cors: { origin: "*" }
+
+const httpServer = createServer()
+const io = new Server(httpServer, {
+  cors: { origin: "*" },
+  path: "/slap"
 })
 
+const PORT = 3001
 const ROOM_CHAR_SIZE = 6
 const players = new Map()
 
@@ -87,3 +92,5 @@ io.on('connection', socket => {
     }
   })
 })
+
+httpServer.listen(PORT)

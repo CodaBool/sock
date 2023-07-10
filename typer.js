@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import { createServer } from "http"
 import { Server } from "socket.io"
 import mongoose from 'mongoose'
 import Game from './game.js'
@@ -9,8 +10,10 @@ import {data as allData} from "./data.js"
 
 const port = process.env.PORT || 3000
 const ROOM_CHAR_SIZE = 6
-const io = new Server(port, {
-  cors: { origin: "*" }
+const httpServer = createServer()
+const io = new Server(httpServer, {
+  cors: { origin: "*" },
+  path: "/typer"
 })
 await mongoose.connect(process.env.MONGO_URI)
 
@@ -445,3 +448,5 @@ function calculateWPM(startTime, player, words, finished) {
   const wpm = Math.floor(numOfWords/ timeInMinutes)
   return wpm
 }
+
+httpServer.listen(port)
