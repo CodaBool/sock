@@ -7,13 +7,11 @@
 
 PRIVATE_DNS_NAME=$(terraform output -raw private_dns)
 INSTANCE_ID=$(terraform output -raw id)
-LOG_GROUP_1=$1
-LOG_GROUP_2=$2
+NAME="Sock"
 
 echo "PRIVATE_DNS_NAME $PRIVATE_DNS_NAME"
 echo "INSTANCE_ID $INSTANCE_ID"
-echo "LOG_GROUP_1 $LOG_GROUP_1"
-echo "LOG_GROUP_2 $LOG_GROUP_2"
+echo "DASHBOARD_NAME $NAME"
 
 DASHBOARD_SOURCECODE=$( jq -n \
   --arg BLUE "#17becf" \
@@ -23,8 +21,7 @@ DASHBOARD_SOURCECODE=$( jq -n \
   --arg BABY_BLUE "#1f77b4" \
   --arg PRIVATE_DNS_NAME "$PRIVATE_DNS_NAME" \
   --arg INSTANCE_ID "$INSTANCE_ID" \
-  --arg LOG_GROUP_1 "$LOG_GROUP_1" \
-  --arg LOG_GROUP_2 "$LOG_GROUP_2" \
+  --arg NAME "$NAME" \
   '{
   "widgets": [
       {
@@ -37,7 +34,7 @@ DASHBOARD_SOURCECODE=$( jq -n \
               "view": "timeSeries",
               "stacked": true,
               "metrics": [
-                  [ "Slap", "mem_used_percent", "host", $PRIVATE_DNS_NAME, { "color": $GREEN } ]
+                  [ $NAME, "mem_used_percent", "host", $PRIVATE_DNS_NAME, { "color": $GREEN } ]
               ],
               "region": "us-east-1",
               "title": "Memory",
@@ -87,7 +84,7 @@ DASHBOARD_SOURCECODE=$( jq -n \
               "sparkline": true,
               "view": "singleValue",
               "metrics": [
-                  [ "Slap", "net_err_out", "host", $PRIVATE_DNS_NAME, "interface", "ens5", { "label": " " } ]
+                  [ $NAME, "net_err_out", "host", $PRIVATE_DNS_NAME, "interface", "ens5", { "label": " " } ]
               ],
               "region": "us-east-1",
               "title": "Errors"
@@ -103,7 +100,7 @@ DASHBOARD_SOURCECODE=$( jq -n \
               "sparkline": true,
               "view": "singleValue",
               "metrics": [
-                  [ "Slap", "netstat_tcp_established", "host", $PRIVATE_DNS_NAME, { "label": " " } ]
+                  [ $NAME, "netstat_tcp_established", "host", $PRIVATE_DNS_NAME, { "label": " " } ]
               ],
               "region": "us-east-1",
               "title": "Connections"
@@ -119,7 +116,7 @@ DASHBOARD_SOURCECODE=$( jq -n \
               "view": "timeSeries",
               "stacked": true,
               "metrics": [
-                  [ "Slap", "disk_used_percent", "path", "/", "host", $PRIVATE_DNS_NAME, "device", "nvme0n1p1", "fstype", "xfs", { "color": $PURPLE } ]
+                  [ $NAME, "disk_used_percent", "path", "/", "host", $PRIVATE_DNS_NAME, "device", "nvme0n1p1", "fstype", "xfs", { "color": $PURPLE } ]
               ],
               "region": "us-east-1",
               "title": "Disk",
@@ -143,7 +140,7 @@ DASHBOARD_SOURCECODE=$( jq -n \
           "properties": {
               "view": "gauge",
               "metrics": [
-                  [ "Slap", "mem_used_percent", "host", $PRIVATE_DNS_NAME, { "color": $GREEN } ]
+                  [ $NAME, "mem_used_percent", "host", $PRIVATE_DNS_NAME, { "color": $GREEN } ]
               ],
               "region": "us-east-1",
               "yAxis": {
@@ -223,7 +220,7 @@ DASHBOARD_SOURCECODE=$( jq -n \
           "type": "metric",
           "properties": {
               "metrics": [
-                  [ "Slap", "processes_total", "host", $PRIVATE_DNS_NAME, { "label": " " } ]
+                  [ $NAME, "processes_total", "host", $PRIVATE_DNS_NAME, { "label": " " } ]
               ],
               "sparkline": true,
               "view": "singleValue",
@@ -267,7 +264,7 @@ DASHBOARD_SOURCECODE=$( jq -n \
           "properties": {
               "view": "gauge",
               "metrics": [
-                  [ "Slap", "disk_used_percent", "path", "/", "host", $PRIVATE_DNS_NAME, "device", "nvme0n1p1", "fstype", "xfs", { "color": $PURPLE } ]
+                  [ $NAME, "disk_used_percent", "path", "/", "host", $PRIVATE_DNS_NAME, "device", "nvme0n1p1", "fstype", "xfs", { "color": $PURPLE } ]
               ],
               "region": "us-east-1",
               "yAxis": {
@@ -289,11 +286,11 @@ DASHBOARD_SOURCECODE=$( jq -n \
           "width": 18,
           "height": 11,
           "properties": {
-              "query": "SOURCE \"/aws/ec2/$LOG_GROUP_1\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
+              "query": "SOURCE \"/aws/ec2/slap\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
               "region": "us-east-1",
               "stacked": false,
               "view": "table",
-              "title": "$LOG_GROUP_1"
+              "title": "slap"
           }
       },
       {
@@ -303,11 +300,11 @@ DASHBOARD_SOURCECODE=$( jq -n \
           "width": 18,
           "height": 11,
           "properties": {
-              "query": "SOURCE \"/aws/ec2/$LOG_GROUP_2\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
+              "query": "SOURCE \"/aws/ec2/typer\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
               "region": "us-east-1",
               "stacked": false,
               "view": "table",
-              "title": "$LOG_GROUP_2"
+              "title": "typer"
           }
       }
   ]
@@ -315,4 +312,4 @@ DASHBOARD_SOURCECODE=$( jq -n \
 
 echo $DASHBOARD_SOURCECODE
 
-aws cloudwatch put-dashboard --dashboard-name "$LOG_GROUP" --dashboard-body "$DASHBOARD_SOURCECODE" | jq -r .
+aws cloudwatch put-dashboard --dashboard-name "Sock" --dashboard-body "$DASHBOARD_SOURCECODE" | jq -r .
