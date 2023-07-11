@@ -48,7 +48,7 @@ build {
     destination = "/home/ec2-user/slap.js"
   }
   provisioner "file" {
-    source = "../typer.js"
+    source = "../typer.mjs"
     destination = "/home/ec2-user/typer.js"
   }
   provisioner "file" {
