@@ -4,9 +4,9 @@ import { Server } from "socket.io"
 import mongoose from 'mongoose'
 import Game from './game.js'
 
-// import allData from "./data.json" assert { type: "json" }
+// was getting warning about expermiental feature of assert type json
+// just using js export for now
 import {data as allData} from "./data.js"
-// import simpleData from "./constants/simple.json" assert { type: "json" }
 
 const port = process.env.PORT || 3000
 const ROOM_CHAR_SIZE = 6
