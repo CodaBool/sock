@@ -109,7 +109,7 @@ output "private_dns" {
 }
 
 output "id" {
-  value = module.ec2.instance.spot_instance_id
+  value = module.ec2.instance.id
 }
 
 output "ip" {
