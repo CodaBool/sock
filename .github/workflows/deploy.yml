@@ -55,5 +55,3 @@ jobs:
       - name: Tag
         working-directory: ./ops
         run: aws ec2 create-tags --resources $(terraform output -raw id) --tags Key=Name,Value=${{ env.repo }}
-
-aws pricing get-products --service-code AmazonEC2 --filters "Type=TERM_MATCH,Field=instanceType,Value=t4g.nano" "Type=TERM_MATCH,Field=operatingSystem,Value=Linux" "Type=TERM_MATCH,Field=usagetype,Value=BoxUsage:t4g.nano" --region us-east-1 | jq -r '.PriceList[]' | jq -r '.terms.OnDemand[].priceDimensions[].pricePerUnit.USD'
