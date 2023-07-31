@@ -23,7 +23,8 @@ jobs:
           aws-region: us-east-1
       - name: Pricing
         run: |
-          price=$(aws --region=us-east-1 ec2 describe-spot-price-history --instance-types t4g.nano --start-time=$(date +%s) --product-descriptions="Linux/UNIX" --query 'SpotPriceHistory[*].{az:AvailabilityZone, price:SpotPrice}' | jq -r ".[] | select(.az == \"us-east-1a\") | .price")
+          #price=$(aws --region=us-east-1 ec2 describe-spot-price-history --instance-types t4g.nano --start-time=$(date +%s) --product-descriptions="Linux/UNIX" --query 'SpotPriceHistory[*].{az:AvailabilityZone, price:SpotPrice}' | jq -r ".[] | select(.az == \"us-east-1a\") | .price")
+          price=$(aws pricing get-products --service-code AmazonEC2 --filters "Type=TERM_MATCH,Field=instanceType,Value=t4g.nano" "Type=TERM_MATCH,Field=operatingSystem,Value=Linux" "Type=TERM_MATCH,Field=usagetype,Value=BoxUsage:t4g.nano" --region us-east-1 | jq -r '.PriceList[]' | jq -r '.terms.OnDemand[].priceDimensions[].pricePerUnit.USD')
           price_day=$(python3 -c "import sys; print(round(float(sys.argv[1]) * 24, 2))" $price)
           price_month=$(python3 -c "import sys; print(round(float(sys.argv[1]) * 24 * 30.4, 2))" $price)
           echo "Server will cost \$$price_day/day & \$$price_month/month"
@@ -54,3 +55,5 @@ jobs:
       - name: Tag
         working-directory: ./ops
         run: aws ec2 create-tags --resources $(terraform output -raw id) --tags Key=Name,Value=${{ env.repo }}
+
+aws pricing get-products --service-code AmazonEC2 --filters "Type=TERM_MATCH,Field=instanceType,Value=t4g.nano" "Type=TERM_MATCH,Field=operatingSystem,Value=Linux" "Type=TERM_MATCH,Field=usagetype,Value=BoxUsage:t4g.nano" --region us-east-1 | jq -r '.PriceList[]' | jq -r '.terms.OnDemand[].priceDimensions[].pricePerUnit.USD'
