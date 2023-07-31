@@ -19,7 +19,6 @@ source "amazon-ebs" "al2" {
   region        = "us-east-1"
   force_deregister = true
   force_delete_snapshot = true
-  // there are options for spot instances
   source_ami_filter {
     filters = {
       name                = "al2*minimal*"
@@ -97,7 +96,7 @@ build {
       "mkdir -p ~/.local/bin",
       "echo 'export PATH=~/.local/bin/:$PATH' >> ~/.bashrc",
 
-      // TODO: using npm ci is more secure, but slows down my install
+      // TODO: using npm ci is more secure, also consider using --production
       "npm install",
 
       // pm2
@@ -124,52 +123,3 @@ build {
     ]
   }
 }
-
-
-/*
-pm2 stop main
-
-one guide suggested pm2 put logs at  /home/safeuser/.pm2/logs/app-err.log.
-
-# question
-- find out what `pm2 startup -u safeuser` does
-
-filter @logStream = 'log'
- | fields datefloor(@timestamp, 1s) as time
-#  | parse @timestamp "*" as year, month, day, other
-#  | filter @message like /URL query contains semicolon, which is no longer a supported separator/
- | filter @message like /debug/
- | parse time "*-*-*" as simpleTime, th1, th3
- | parse  @message '"level":"*"' as level
- | parse  @message '"message":"*"' as message
-
-
-sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
-sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
-
-delete
-sudo iptables -t nat -D PREROUTING 1
-
-list
-sudo iptables -t nat -v -L PREROUTING -n --line-number
-
-stackoverflow with tomcat 
-
-sudo iptables -A INPUT -i eth0 -p tcp --dport 80 -j ACCEPT
-sudo iptables -A INPUT -i eth0 -p tcp --dport 8080 -j ACCEPT
-sudo iptables -A FORWARD -p tcp --dport 80 -j ACCEPT
-sudo iptables -A PREROUTING -t nat -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
-
-medium article
-sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 9000
-
-enable routing
-echo 1 > /proc/sys/net/ipv4/ip_forward
-
-save iptables
-iptables-save > /etc/sysconfig/iptables #IPv4
-
-sudo iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
-sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT
-iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
-*/

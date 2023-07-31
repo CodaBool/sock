@@ -30,7 +30,7 @@ jobs:
           echo "Server will cost \$$price_day/day & \$$price_month/month"
       - uses: hashicorp/setup-packer@main
         with:
-          version: 1.9.1 # https://releases.hashicorp.com/packer
+          version: 1.9.2 # https://releases.hashicorp.com/packer
       - name: Packer
         working-directory: ./ops
         run: |
@@ -39,7 +39,7 @@ jobs:
           packer build -var="unique_ami_name=${{ env.repo }}-${{ env.run }}" .
       - uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.2 # https://releases.hashicorp.com/terraform
+          terraform_version: 1.5.4 # https://releases.hashicorp.com/terraform
           terraform_wrapper: false
       - name: Deploy
         working-directory: ./ops
@@ -52,6 +52,6 @@ jobs:
           ./dashboard.sh slap typer
           ./rm_ami.sh || true
           ./rm_ebs.sh || true
-      - name: Tag
-        working-directory: ./ops
-        run: aws ec2 create-tags --resources $(terraform output -raw id) --tags Key=Name,Value=${{ env.repo }}
+      # - name: Tag
+      #   working-directory: ./ops
+      #   run: aws ec2 create-tags --resources $(terraform output -raw id) --tags Key=Name,Value=${{ env.repo }}
