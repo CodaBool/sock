@@ -33,6 +33,7 @@ jobs:
         with:
           version: 1.9.4 # https://releases.hashicorp.com/packer
       - name: Packer
+        if: "! contains(github.event.commits[0].message, '[skip build]')"
         working-directory: ./ops
         run: |
           # echo "MONGO_URI=${{ secrets.MONGO_URI }}" > ../.env
