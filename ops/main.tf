@@ -79,29 +79,23 @@ terraform {
 
 module "ec2" {
   source        = "github.com/CodaBool/AWS/modules/ec2"
-  name          = var.name # will use "name*" for ami filtering
-  instance_type = "t4g.nano"
-  ssh_ip        = var.ssh_ip == "" ? data.external.my_ip.result.ip : var.ssh_ip 
-  app_ports     = [80]
-  key_name      = var.key_name
+  name          = "sock" # will use "name*" for ami filtering
+  subnet        = "subnet-02bd6f23bd2e48675"
+  ssh_ip        = var.ssh_ip == "" ? "${chomp(data.http.ipv6.response_body)}/128" : var.ssh_ip
+  ip            = "2600:1f18:1248:e300:813:9e07:6f2e:6f7a"
 }
 
-data "external" "my_ip" {
-  program = ["curl", "https://ipinfo.io"]
-}
-
-variable "name" {
-  type = string
-}
+# data "external" "ipv4" {
+#   program = ["curl", "https://ipinfo.io"]
+# }
 
 variable "ssh_ip" {
   type = string
   default = ""
 }
 
-variable "key_name" {
-  type = string
-  default = "win"
+data "http" "ipv6" {
+  url = "https://ipv6.icanhazip.com"
 }
 
 output "private_dns" {
@@ -110,8 +104,4 @@ output "private_dns" {
 
 output "id" {
   value = module.ec2.instance.id
-}
-
-output "ip" {
-  value = module.ec2.eip
 }

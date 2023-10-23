@@ -4,7 +4,8 @@ permissions: # required for oidc
   contents: read
 on:
   push:
-    branchs: [main]
+    branchs:
+      - never
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -30,16 +31,16 @@ jobs:
           echo "Server will cost \$$price_day/day & \$$price_month/month"
       - uses: hashicorp/setup-packer@main
         with:
-          version: 1.9.2 # https://releases.hashicorp.com/packer
+          version: 1.9.4 # https://releases.hashicorp.com/packer
       - name: Packer
         working-directory: ./ops
         run: |
-          echo "MONGO_URI=${{ secrets.MONGO_URI }}" > ../.env
+          # echo "MONGO_URI=${{ secrets.MONGO_URI }}" > ../.env
           packer init .
           packer build -var="unique_ami_name=${{ env.repo }}-${{ env.run }}" .
       - uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.4 # https://releases.hashicorp.com/terraform
+          terraform_version: 1.6.2 # https://releases.hashicorp.com/terraform
           terraform_wrapper: false
       - name: Deploy
         working-directory: ./ops
@@ -49,7 +50,7 @@ jobs:
       - name: Dashboard
         working-directory: ./ops
         run: |
-          ./dashboard.sh slap typer
+          ./dashboard.sh
           ./rm_ami.sh || true
           ./rm_ebs.sh || true
       # - name: Tag

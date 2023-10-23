@@ -292,23 +292,24 @@ DASHBOARD_SOURCECODE=$( jq -n \
               "view": "table",
               "title": "slap"
           }
-      },
-      {
-          "type": "log",
-          "x": 0,
-          "y": 12,
-          "width": 18,
-          "height": 11,
-          "properties": {
-              "query": "SOURCE \"/aws/ec2/typer\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
-              "region": "us-east-1",
-              "stacked": false,
-              "view": "table",
-              "title": "typer"
-          }
       }
   ]
 }' )
+
+# {
+#     "type": "log",
+#     "x": 0,
+#     "y": 12,
+#     "width": 18,
+#     "height": 11,
+#     "properties": {
+#         "query": "SOURCE \"/aws/ec2/typer\" | fields @timestamp, @message\n| sort @timestamp desc\n| limit 20",
+#         "region": "us-east-1",
+#         "stacked": false,
+#         "view": "table",
+#         "title": "typer"
+#     }
+# }
 
 echo $DASHBOARD_SOURCECODE
 

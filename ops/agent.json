@@ -25,11 +25,6 @@
             "file_path": "/home/ec2-user/slap.log",
             "log_group_name": "/aws/ec2/slap",
             "retention_in_days": 30
-          },
-          {
-            "file_path": "/home/ec2-user/typer.log",
-            "log_group_name": "/aws/ec2/typer",
-            "retention_in_days": 30
           }
         ]
       }

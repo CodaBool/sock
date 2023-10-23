@@ -1,7 +1,7 @@
 packer {
   required_plugins {
     amazon = {
-      version = ">= 1.2.6"
+      version = ">= 1.2.7"
       source  = "github.com/hashicorp/amazon"
     }
   }
@@ -46,10 +46,10 @@ build {
     source = "../slap.mjs"
     destination = "/home/ec2-user/slap.js"
   }
-  provisioner "file" {
-    source = "../typer.mjs"
-    destination = "/home/ec2-user/typer.js"
-  }
+  // provisioner "file" {
+  //   source = "../typer.mjs"
+  //   destination = "/home/ec2-user/typer.js"
+  // }
   provisioner "file" {
     source = "../sock.config.cjs"
     destination = "/home/ec2-user/sock.config.cjs"
@@ -58,18 +58,18 @@ build {
     source = "../package.json"
     destination = "/home/ec2-user/package.json"
   }
-  provisioner "file" {
-    source = "../.env"
-    destination = "/home/ec2-user/.env"
-  }
-  provisioner "file" {
-    source = "../game.js"
-    destination = "/home/ec2-user/game.js"
-  }
-  provisioner "file" {
-    source = "../data.js"
-    destination = "/home/ec2-user/data.js"
-  }
+  // provisioner "file" {
+  //   source = "../.env"
+  //   destination = "/home/ec2-user/.env"
+  // }
+  // provisioner "file" {
+  //   source = "../game.js"
+  //   destination = "/home/ec2-user/game.js"
+  // }
+  // provisioner "file" {
+  //   source = "../data.js"
+  //   destination = "/home/ec2-user/data.js"
+  // }
   provisioner "file" {
     source = "../nginx.conf"
     destination = "/tmp/nginx.conf"
@@ -86,6 +86,8 @@ build {
       "sudo yum update -y -q",
 
       // AWS monitoring & node & nginx
+      // add back in ssm agent when AWS supports ipv6 for agent requests
+      // https://s3.us-east-1.amazonaws.com/amazon-ssm-us-east-1/latest/linux_arm64/amazon-ssm-agent.rpm
       "sudo yum install amazon-cloudwatch-agent nodejs nginx -y -q",
 
       // mem save technique
@@ -106,7 +108,7 @@ build {
       "pm2 save",
 
       // add monitoring config
-      "chmod 400 ~/.env",
+      // "chmod 400 ~/.env",
       "sudo chmod 750 /tmp/agent.json",
       "sudo chown root:root /tmp/agent.json",
       "sudo mv /tmp/agent.json /opt/aws/agent.json",
