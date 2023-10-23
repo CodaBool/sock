@@ -81,7 +81,7 @@ module "ec2" {
   source        = "github.com/CodaBool/AWS/modules/ec2"
   name          = "sock" # will use "name*" for ami filtering
   subnet        = "subnet-02bd6f23bd2e48675"
-  ssh_ip        = var.ssh_ip == "" ? "${chomp(data.http.ipv6.response_body)}/128" : var.ssh_ip
+  ssh_ip        = var.ssh_ip
   ip            = "2600:1f18:1248:e300:813:9e07:6f2e:6f7a"
 }
 
@@ -94,9 +94,11 @@ variable "ssh_ip" {
   default = ""
 }
 
-data "http" "ipv6" {
-  url = "https://ipv6.icanhazip.com"
-}
+
+# "${chomp(data.http.ipv6.response_body)}/128"
+# data "http" "ipv6" {
+#   url = "https://ipv6.icanhazip.com"
+# }
 
 output "private_dns" {
   value = module.ec2.instance.private_dns
