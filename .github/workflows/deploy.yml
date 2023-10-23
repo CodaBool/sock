@@ -47,7 +47,7 @@ jobs:
         working-directory: ./ops
         run: |
           terraform init
-          terraform apply -auto-approve -var="ssh_ip=${{ secrets.WIN_IP }}" -var="name=${{ env.repo }}"
+          terraform apply -auto-approve -var="ssh_ip=${{ secrets.WIN_IP }}"
       - name: Dashboard
         working-directory: ./ops
         run: |
